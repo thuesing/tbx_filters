@@ -5,9 +5,9 @@
 */
 function tbx_filters_filter_info() {
   $filters = array();
-  $filters['filter_foo'] = array(
-    'title' => t('Foo Filter (example)'),
-    'description' => t('Every instance of "foo" in the input text will be replaced with a preconfigured replacement.'),
+  $filters['filter_escape_ampersand'] = array(
+    'title' => t('Escape ampersand'),
+    'description' => t('Every instance of "&" in the input text will be replaced with a "ampersand".'),
     'process callback'  => '_tbx_filters_process',
     'default settings' => array(
       'filter_example_foo' => 'bar',
@@ -22,7 +22,51 @@ function tbx_filters_filter_info() {
 * Implements filter process callback.
 */
 function _tbx_filters_process($text, $filter)  {
-  return str_replace('IA', 'ZZZ', $text);
+	 return preg_replace("/ et /", ' XXX ', $text);
+}
+
+
+/**
+ * Implements hook_node_view().
+ */
+
+function tbx_filters_node_view($node, $view_mode, $langcode) {
+  // Only add a table of contents to nodes with a body
+
+ drupal_load('module', 'simple_table_of_contents');
+
+ kpr($node);
+ 
+  if (isset($node->content['body'])) {
+    // Get the node's body text
+    $body = $node->content['body'][0]['#markup'];
+
+    $body = preg_replace("/&/", '&amp;', $body);
+
+    // Append or prepend a container to hold the table of contents
+    $position = variable_get('simple_table_of_contents_position', 'above');
+
+    switch ($position) {
+      case 'above':
+        $html = '<div id="simple-table-of-contents"></div>' . $body;
+        break;
+      case 'below':
+        $html = $body . '<div id="simple-table-of-contents"></div>';
+        break;
+    }
+
+    // Generate the table of contents
+    $markup = simple_table_of_contents_generate_table_of_contents($html);
+
+    // Replace the node's body with the modified markup if a table of contents
+    // was built
+    if (isset($markup)) {
+      $node->content['body'][0]['#markup'] = $markup;
+      $node->content['body'][0]['#attached']['css'][] = drupal_get_path('module', 'simple_table_of_contents') . '/simple_table_of_contents.css';
+    }
+
+   
+  } 
 }
 
 
