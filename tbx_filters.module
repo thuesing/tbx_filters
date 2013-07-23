@@ -12,26 +12,17 @@ function tbx_filters_filter_info() {
     'default settings' => array(
       'filter_example_foo' => 'bar',
     ),
-    'settings callback' => '_tbx_filters_settings',
-    'tips callback' => '_tbx_filters_tips',
   );
 
   return $filters;
 }
-/**
-* Implements filter prepare callback._tbx_filters_settings
-*/
-function _tbx_filters_settings() {
-}
+
 
 /**
 * Implements filter process callback.
 */
-function _tbx_filters_process() {
+function _tbx_filters_process($text, $filter)  {
+  return str_replace('IA', 'ZZZ', $text);
 }
 
-/**
-* Implements filter tips callback.
-*/
-function _tbx_filters_tips() {
-}
+
