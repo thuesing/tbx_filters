@@ -1,0 +1,5 @@
+; $Id$
+name = Tbx filter
+description = Text format filters for Tbx.
+core = 7.x
+files[] = tbx_filters.module
